@@ -15,13 +15,15 @@ class Game(tk.Frame):
         self.main_grid.grid(pady=(100, 0))
         self.make_GUI()
         self.start_game()
-
+        
+        # controls
         self.master.bind("<Left>", self.left)
         self.master.bind("<Right>", self.right)
         self.master.bind("<Up>", self.up)
         self.master.bind("<Down>", self.down)
         self.master.bind("<z>", self.undo)
-
+        
+        # use matrix to keep track of the board
         self.last_matrix = [[0] * 4 for _ in range(4)]
         self.last_last_matrix = [[0] * 4 for _ in range(4)]
         self.last_score = 0
@@ -71,6 +73,8 @@ class Game(tk.Frame):
 
     def start_game(self):
         self.matrix = [[0] * 4 for _ in range(4)]
+        
+        # start with random tiles
         row = random.randint(0, 3)
         column = random.randint(0, 3)
         self.matrix[row][column] = 2
@@ -145,6 +149,7 @@ class Game(tk.Frame):
             #self.game_over_frame.grid_forget()
         except AttributeError:
             pass
+        # undo the score
         if self.last_matrix != [[0] * 4 for _ in range(4)]:
             self.matrix = self.last_matrix
             self.score = self.last_score
