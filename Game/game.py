@@ -687,11 +687,26 @@ def run_1000_games_random_vs_model(num_games=1000):
     print(f"  Score:      {stats_str(rand_scores)}")
     print(f"  HighestTile:{stats_str(rand_high_tiles)}")
     print(f"  Moves:      {stats_str(rand_moves)}")
+    rand_count_tiles = [rand_high_tiles.count(2**i) for i in range(16)]
+    filtered_tiles = [(2**i, c) for i, c in enumerate(rand_count_tiles) if c > 0]
+    print("  Tiles:" , end=" ")
+    for tile, count in filtered_tiles:
+        # all in the same line
+        print(f"{tile}:{count}", end=", ")
+    
 
     print("\nModel Approach:")
     print(f"  Score:      {stats_str(model_scores)}")
     print(f"  HighestTile:{stats_str(model_high_tiles)}")
     print(f"  Moves:      {stats_str(model_moves)}")
+    # print how many for each tile, for example 256 -> 82 times
+    model_count_tiles = [model_high_tiles.count(2**i) for i in range(16)]
+    filtered_tiles = [(2**i, c) for i, c in enumerate(model_count_tiles) if c > 0]
+    print("  Tiles:" , end=" ")
+    for tile, count in filtered_tiles:
+        # all in the same line
+        print(f"{tile}:{count}", end=", ")
+    
 
     # You could do a direct comparison, e.g. which has higher average score
     avg_random_score = statistics.mean(rand_scores)
@@ -709,5 +724,5 @@ def main():
     root.mainloop()
 
 if __name__ == "__main__":
-    # main()            
-    run_1000_games_random_vs_model(num_games=1000)
+    main()            
+    run_1000_games_random_vs_model(num_games=10000)
