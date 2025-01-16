@@ -35,7 +35,8 @@ model = DQNModel()  # Ensure this matches the training architecture
 model.load_state_dict(
     torch.load(
         "model.pth",
-        map_location=device
+        map_location=device,
+        weights_only=True
     )
 )
 model.to(device)
@@ -68,24 +69,38 @@ def board_to_exponents(board):
 ###############################################################################
 # 3) Predict the Next Move Using DQN
 ###############################################################################
-def predict_move_dqn(board):
+def predict_moves_sorted_dqn(board):
     """
-    1) Convert board -> exponents -> tensor(1,16)
-    2) Get Q-values from DQN
-    3) Select the action with the highest Q-value
-    4) Return the corresponding direction
+    Predicts and returns a list of moves sorted by descending Q-values.
+
+    Args:
+        board (list of lists): The current 4x4 game board.
+
+    Returns:
+        list of str: List of directions ('Up', 'Down', 'Left', 'Right') sorted by descending Q-value.
     """
-    # Convert 4x4 board to exponents
-    exps = board_to_exponents(board)
-    x = torch.tensor(exps, dtype=torch.float32).unsqueeze(0).to(device)  # Shape: [1,16]
+    # Convert the board to exponents
+    exponents = board_to_exponents(board)
+    
+    # Convert to tensor and send to the appropriate device
+    state = torch.tensor(exponents, dtype=torch.float32).unsqueeze(0).to(device)  # Shape: [1, 16]
 
     with torch.no_grad():
-        q_values = model(x)  # Shape: [1,4]
+        q_values = model(state)  # Shape: [1, 4]
 
-    # Select the action with the highest Q-value
-    action_idx = torch.argmax(q_values, dim=1).item()
-    chosen_direction = action_map[action_idx]
-    return chosen_direction
+    # Get actions sorted by descending Q-value
+    sorted_action_indices = torch.argsort(q_values, dim=1, descending=True).squeeze(0).tolist()
+
+    # Handle the case when there's only one action
+    if isinstance(sorted_action_indices, int):
+        sorted_action_indices = [sorted_action_indices]
+
+    # Map action indices to directions
+    sorted_directions = [action_map[action] for action in sorted_action_indices]
+
+    return sorted_directions
+
+
 
 ###############################################################################
 # Main 2048 Game Class
@@ -295,29 +310,29 @@ class Game2048:
         if self.is_game_over():
             return
 
-        # 1) Get the best move from the DQN model
-        chosen_direction = predict_move_dqn(self.board)
+        # 1) Get moves sorted by descending Q-value
+        sorted_directions = predict_moves_sorted_dqn(self.board)
 
         # 2) Save current state (for undo)
         pre_board = deepcopy(self.board)
         pre_score = self.score
 
-        # 3) Execute the chosen move
-        moved = self.execute_move(chosen_direction)
+        # 3) Attempt each move in sorted order until a valid move is found
+        for direction in sorted_directions:
+            moved = self.execute_move(direction)
+            if moved:
+                self.history.append((pre_board, pre_score))
+                self.spawn_new_tile()
+                self.update_ui()
+                print(f"ML single-move picked: {direction}")
+                if self.is_game_over():
+                    self.show_game_over()
+                return  # Exit after a successful move
 
-        if moved:
-            self.history.append((pre_board, pre_score))
-            self.spawn_new_tile()
-            self.update_ui()
-            print(f"ML single-move picked: {chosen_direction}")
-            if self.is_game_over():
-                self.show_game_over()
-        else:
-            # Move didn't change the board; possibly stuck
-            print(f"ML single-move {chosen_direction} did not change the board.")
-            # Optionally, try the next best move or consider the game over
-            # Here, we'll just show game over
-            self.show_game_over()
+        # 4) If no valid moves found, declare game over
+        print("ML single-move: No valid moves found. Game Over!")
+        self.show_game_over()
+
 
     
     def execute_move(self, direction):
@@ -345,14 +360,21 @@ class Game2048:
                 self.show_game_over()
                 return
 
-            # Get the best move from the DQN model
-            chosen_direction = predict_move_dqn(self.board)
+            # 1) Get moves sorted by descending Q-value
+            sorted_directions = predict_moves_sorted_dqn(self.board)
 
-            # Save board/score for undo
+            # 2) Save board/score for undo
             pre_board = deepcopy(self.board)
             pre_score = self.score
 
-            moved = self.execute_move(chosen_direction)
+            # 3) Attempt each move in sorted order until a valid move is found
+            moved = False
+            chosen_direction = None
+            for direction in sorted_directions:
+                if self.execute_move(direction):
+                    moved = True
+                    chosen_direction = direction
+                    break
 
             if moved:
                 self.history.append((pre_board, pre_score))
@@ -360,16 +382,17 @@ class Game2048:
                 self.update_ui()
                 print(f"ML continuous move picked: {chosen_direction}")
                 if not self.is_game_over():
-                    # Schedule next step (tweak the delay as you like)
+                    # Schedule the next step (adjust delay as needed)
                     self.master.after(50, step)
                 else:
                     self.show_game_over()
             else:
-                # Move didn't change the board; possibly stuck
-                print(f"ML continuous move {chosen_direction} did not change the board.")
+                # No valid move found => game over
+                print("ML continuous move: No valid moves found. Game Over!")
                 self.show_game_over()
 
         step()
+
 
     
     def win_game(self, event=None):
@@ -568,12 +591,141 @@ class Game2048:
 ###############################################################################
 # Main Function
 ###############################################################################
+
+def run_single_game_random():
+    """
+    Creates a headless Game2048 instance and keeps applying random moves 
+    until game is over. Returns (final_score, highest_tile, move_count).
+    """
+    game = Game2048(headless=True)
+    move_count = 0
+
+    # While not game over, pick a random direction among ['Up','Down','Left','Right'].
+    # Only apply it if it changes the board. If not, pick another random direction.
+    directions = ['Up','Down','Left','Right']
+    while not game.is_game_over():
+        direction = random.choice(directions)
+        changed = game.execute_move(direction)
+        if changed:
+            game.spawn_new_tile()
+            move_count += 1
+
+    return (game.score, game.highest_tile, move_count)
+
+def predict_moves_descending(board):
+    """
+    1) Convert board -> exponents -> tensor(1,16)
+    2) Get logits from model
+    3) Sort moves by descending logit
+    4) Return a list of moves in descending confidence, e.g. ['Right','Down','Left','Up']
+    """
+    # Convert 4x4 board to exponents
+    exps = board_to_exponents(board)
+    x = torch.tensor(exps, dtype=torch.long).unsqueeze(0)
+
+    with torch.no_grad():
+        logits = model(x)  # shape [1,4]
+
+    # We have model outputs for moves in this order: 0=Right,1=Left,2=Down,3=Up
+    move_idx_sorted = torch.argsort(logits, dim=1, descending=True).squeeze(0)
+
+    # Map indices back to strings
+    idx_to_str = {0: 'Right', 1: 'Left', 2: 'Down', 3: 'Up'}
+
+    # Return list of directions in descending confidence
+    moves_in_desc_order = [idx_to_str[idx.item()] for idx in move_idx_sorted]
+    return moves_in_desc_order
+
+def run_single_game_model():
+    game = Game2048(headless=True)
+    game.reset_game()
+
+    while not game.is_game_over():
+        moves_sorted = predict_moves_sorted_dqn(game.board)
+        moved = False
+        for move in moves_sorted:
+            if game.execute_move(move):
+                game.spawn_new_tile()
+                game.update_ui()
+                moved = True
+                break
+        if not moved:
+            # No valid move found, game over
+            break
+
+    return game.score, game.highest_tile, len(game.history)
+
+def run_1000_games_random_vs_model(num_games=1000):
+    random_results = []
+    model_results = []
+
+    # ----- 1) Run random approach -----
+    print(f"Running {num_games} random games...")
+    for _ in range(num_games):
+        score, highest_tile, moves_count = run_single_game_random()
+        random_results.append((score, highest_tile, moves_count))
+
+    # ----- 2) Run ML approach -----
+    print(f"Running {num_games} model-based games...")
+    for _ in range(num_games):
+        score, highest_tile, moves_count = run_single_game_model()
+        model_results.append((score, highest_tile, moves_count))
+
+    # Unpack results
+    rand_scores     = [r[0] for r in random_results]
+    rand_high_tiles = [r[1] for r in random_results]
+    rand_moves      = [r[2] for r in random_results]
+
+    model_scores     = [r[0] for r in model_results]
+    model_high_tiles = [r[1] for r in model_results]
+    model_moves      = [r[2] for r in model_results]
+
+    # Compute simple stats: mean, max, min
+    # (You can compute median, standard deviation, etc. if you want.)
+    def stats_str(values):
+        return (f"avg={statistics.mean(values):.1f}, "
+                f"min={min(values)}, "
+                f"max={max(values)}")
+
+    print("\n---------- Results Comparison ----------")
+    print("Random Approach:")
+    print(f"  Score:      {stats_str(rand_scores)}")
+    print(f"  HighestTile:{stats_str(rand_high_tiles)}")
+    print(f"  Moves:      {stats_str(rand_moves)}")
+    rand_count_tiles = [rand_high_tiles.count(2**i) for i in range(16)]
+    filtered_tiles = [(2**i, c) for i, c in enumerate(rand_count_tiles) if c > 0]
+    print("  Tiles:" , end=" ")
+    for tile, count in filtered_tiles:
+        # all in the same line
+        print(f"{tile}:{count}", end=", ")
+    
+
+    print("\nModel Approach:")
+    print(f"  Score:      {stats_str(model_scores)}")
+    print(f"  HighestTile:{stats_str(model_high_tiles)}")
+    print(f"  Moves:      {stats_str(model_moves)}")
+    # print how many for each tile, for example 256 -> 82 times
+    model_count_tiles = [model_high_tiles.count(2**i) for i in range(16)]
+    filtered_tiles = [(2**i, c) for i, c in enumerate(model_count_tiles) if c > 0]
+    print("  Tiles:" , end=" ")
+    for tile, count in filtered_tiles:
+        # all in the same line
+        print(f"{tile}:{count}", end=", ")
+    
+
+    # You could do a direct comparison, e.g. which has higher average score
+    avg_random_score = statistics.mean(rand_scores)
+    avg_model_score  = statistics.mean(model_scores)
+
+    winner = "Model" if avg_model_score > avg_random_score else "Random"
+    print(f"\nOverall winner by average score: {winner}!")
+
 def main():
     root = tk.Tk()
     game = Game2048(root)
     root.mainloop()
 
 if __name__ == "__main__":
-    main()
+    # main()
     # Note: The following line should be removed or placed outside the __main__ block
-    # run_1000_games_random_vs_model(num_games=10000)
+    run_1000_games_random_vs_model(num_games=1000)
