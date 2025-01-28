@@ -100,10 +100,10 @@ class GameEnv2048:
 
     def _is_game_over(self):
         """Check if no more moves are possible or 2048 tile is reached."""
-        # If 2048 is reached, consider it 'done' (you can define differently if you like)
-        for row in self.board:
-            if 2048 in row:
-                return True
+        # # If 2048 is reached, consider it 'done' (you can define differently if you like)
+        # for row in self.board:
+        #     if 2048 in row:
+        #         return True
 
         # If any cell is empty => not game over
         for row in self.board:
@@ -361,7 +361,7 @@ def train_dqn(env,
 ##############################################################################
 def main():
     env = GameEnv2048(size=4)
-    trained_model = train_dqn(env, num_episodes=200)
+    trained_model = train_dqn(env, num_episodes=2000)
 
     # Save the trained model
     torch.save(trained_model.state_dict(), "model.pth")
