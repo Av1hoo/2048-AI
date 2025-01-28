@@ -1,9 +1,9 @@
 import os
 import pickle
 import tkinter as tk
-from game_viewer import BestGameViewer
-from C_funcs import *
-import ai_factory
+from CytonFiles.Game_viewer import BestGameViewer
+from CytonFiles.C_funcs import *
+from CytonFiles.AI_Factory import AI_Factory
 
 # Global config
 STRATEGY = ["Expectimax", "Minimax", "Random", "DQN"]
@@ -16,7 +16,7 @@ class Game2048GUI:
         self.master = master
         self.master.title("2048 Advanced - C Accelerated")
         self.master.resizable(False, False)
-
+        self.factory = AI_Factory()
         init_c_game()
 
         self.bitboard = 0
@@ -29,7 +29,7 @@ class Game2048GUI:
         self.moves=[]
         self.best_score=0
 
-        self.ai = ai_factory.AI_Factory.create_ai(AI_STRATEGY)
+        self.ai = self.factory.create_ai(self.factory, AI_STRATEGY)
 
         self.bg_color="#BBADA0"
         self.cell_colors = {
@@ -197,24 +197,36 @@ class Game2048GUI:
 
     def save_if_best(self):
         best_score_stored=-1
-        if os.path.exists(BEST_GAME_PATH):
-            try:
-                with open(BEST_GAME_PATH,"rb") as f:
-                    data = pickle.load(f)
-                best_score_stored = data.get("score",-1)
-            except:
-                pass
-        if self.score>best_score_stored:
+        if self.score > best_score_stored:
             data_to_store = {
-                "score":self.score,
-                "highest":self.highest,
-                "states":self.states[:],
-                "moves":self.moves[:],
+                "score": self.score,
+                "highest": self.highest,
+                "states": self.states[:],
+                "moves": self.moves[:],
             }
-            with open(BEST_GAME_PATH,"wb") as f:
-                pickle.dump(data_to_store,f)
+            
+            # Create directory if needed
+            os.makedirs(os.path.dirname(BEST_GAME_PATH), exist_ok=True)
+            
+            # First game case or better score case
+            if not os.path.exists(BEST_GAME_PATH):
+                with open(BEST_GAME_PATH, "wb") as f:
+                    pickle.dump(data_to_store, f)
+                print(f"[INFO] First best game saved with score={self.score}")
+                return
+                
+            # Compare with existing best game
+            with open(BEST_GAME_PATH, "rb") as f:
+                data = pickle.load(f)
+                
+            if self.score <= data["score"]:
+                return
+                
+            # Save new best game
+            with open(BEST_GAME_PATH, "wb") as f:
+                pickle.dump(data_to_store, f)
             print(f"[INFO] New best game with score={self.score}, highest={self.highest}")
-
+            
     def view_best_game(self):
         if not os.path.exists(BEST_GAME_PATH):
             print("No best game found.")

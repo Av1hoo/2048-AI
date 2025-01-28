@@ -1,5 +1,5 @@
 import random
-from C_funcs import bitboard_move
+from CytonFiles.C_funcs import bitboard_move
 
 class RandomAI:
     def get_move(self, bitboard):

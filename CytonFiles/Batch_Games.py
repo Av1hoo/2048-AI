@@ -1,16 +1,17 @@
 import os
 import pickle
 from collections import defaultdict
-import ai_factory
-from C_funcs import init_c_game, bitboard_spawn_func, bitboard_get_max_tile_func, bitboard_move_func, bitboard_is_game_over_func
+from CytonFiles.AI_Factory import AI_Factory
+from CytonFiles.C_funcs import init_c_game, bitboard_spawn_func, bitboard_get_max_tile_func, bitboard_move_func, bitboard_is_game_over_func
 
 
 
 class Batch_Games():
     @staticmethod
-    def run_batch_games(self, num_games=1000, strategy="expectimax"):
+    def run_batch_games(num_games=1000, strategy="expectimax", MODEL_PATH="model.pth", DEPTH=5):
         init_c_game()
-        ai = ai_factory.AI_Factory.create_ai(strategy)
+        factory = AI_Factory(EXPECTIMAX_DEPTH=DEPTH, MINIMAX_DEPTH=DEPTH)
+        ai = factory.create_ai(factory, strategy, MODEL_PATH)
         
         best_score = -1
         best_game = None
@@ -85,10 +86,11 @@ class Batch_Games():
         return stats
 
     @staticmethod
-    def run_multiple_batch_strategies(self, num_games=1000, strategies="expectimax"):
+    def run_multiple_batch_strategies(num_games=1000, strategies="expectimax", MODEL_PATH="model.pth"):
         stats_all = {}
-        for strategy in strategies:
+        # strategies = {"Expectimax": 2, "Minimax": 4, "Random": 0, "DQN": 0}
+        for strategy, depth in strategies.items():
             print(f"\nRunning batch games for strategy: {strategy}")
-            stats = self.run_batch_games(num_games, strategy)
+            stats = Batch_Games.run_batch_games(num_games, strategy, MODEL_PATH, depth)
             stats_all[strategy] = stats
         return stats_all

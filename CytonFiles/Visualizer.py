@@ -15,7 +15,7 @@ class Visualizer():
             plt.xlabel('AI Strategies')
             plt.ylabel('Average Score')
             plt.title(f'Average Scores over {num_games} Games')
-            plt.savefig(f'stats/average_scores_{time.strftime("%Y%m%d-%H%M")}.png')
+            plt.savefig(f'Stats/average_scores_{time.strftime("%Y%m%d-%H%M")}.png')
             plt.show()
 
             plt.figure(figsize=(10, 6))
@@ -23,7 +23,7 @@ class Visualizer():
             plt.xlabel('AI Strategies')
             plt.ylabel('Best Score')
             plt.title(f'Best Scores over {num_games} Games')
-            plt.savefig(f'stats/best_scores_{time.strftime("%Y%m%d-%H%M")}.png')
+            plt.savefig(f'Stats/best_scores_{time.strftime("%Y%m%d-%H%M")}.png')
             plt.show()
 
             plt.figure(figsize=(12, 8))
@@ -38,7 +38,7 @@ class Visualizer():
             plt.xticks(range(len(all_tiles)), all_tiles, rotation=45)
             plt.legend()
             plt.grid(True)
-            plt.savefig(f"stats/highest_tile_distribution_{time.strftime('%Y%m%d-%H%M')}.png")
+            plt.savefig(f"Stats/highest_tile_distribution_{time.strftime('%Y%m%d-%H%M')}.png")
             plt.show()
         else:
             # Single strategy stats
@@ -60,5 +60,5 @@ class Visualizer():
             # if no folder stats create it
             if not os.path.exists("stats"):
                 os.makedirs("stats")
-            plt.savefig(f"stats/highest_tile_distribution_{time.strftime('%Y%m%d-%H%M')}.png")
+            plt.savefig(f"Stats/highest_tile_distribution_{time.strftime('%Y%m%d-%H%M')}.png")
             print(f"Strategy: {strategy} | Average: {avg_score} | Best: {best_score} | Highest Tile Distribution: {histogram}")

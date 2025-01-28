@@ -2,7 +2,7 @@ import ctypes
 ###############################################################################
 # 1) Load the C Library via ctypes
 ###############################################################################
-libname = "C/c_game2048.dll"
+libname = "CytonFiles\C\c_game2048.dll"
 c2048 = ctypes.CDLL(libname)
 
 c2048.init_c_game_2048.argtypes = []
