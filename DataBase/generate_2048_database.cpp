@@ -483,16 +483,13 @@ int main()
     ios::sync_with_stdio(false);
     cin.tie(nullptr);
 
-#ifdef __unix__
-    enableRawMode();  // optional
-#endif
 
     // 1) Initialize row-move tables
     initMoveTables();
 
     // 2) Desired total number of valid games, and number of threads
-    const int NUM_GAMES   = 10000000;  // total desired
-    const int NUM_THREADS = max(1u, thread::hardware_concurrency());
+    const int NUM_GAMES   = 1000;  // total desired
+    const int NUM_THREADS = 8;
     cout << "Using " << NUM_THREADS << " threads.\n";
 
     // We'll split the total “valid” games across threads evenly

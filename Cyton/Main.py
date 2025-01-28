@@ -1,6 +1,6 @@
 import tkinter as tk
 import time
-from batch_games import Batch_Games
+import Batch_Games
 import Visualizer
 import Game2048GUI
 
