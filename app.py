@@ -7,7 +7,7 @@ from CytonFiles.Visualizer import Visualizer
 from CytonFiles.Batch_Games import Batch_Games
 
 app = Flask(__name__)
-app.secret_key = "Game2048"  # Replace with a secure key in production
+app.secret_key = os.environ.get("SECRET_KEY", "default_secret_key")  # Use environment variable
 
 AVAILABLE_STRATEGIES = ["Expectimax", "Minimax", "Random", "DQN"]
 
@@ -328,4 +328,5 @@ if __name__ == "__main__":
     # Ensure the 'static/Stats' directory exists
     if not os.path.exists("static/Stats"):
         os.makedirs("static/Stats")
-    app.run(debug=True)
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port, debug=False)
