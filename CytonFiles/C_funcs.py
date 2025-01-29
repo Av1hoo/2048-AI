@@ -1,9 +1,21 @@
 import ctypes
 import time
+import os
+import platform
+
 ###############################################################################
 # 1) Load the C Library via ctypes
 ###############################################################################
-libname = "CytonFiles\C\c_game2048.dll"
+current_os = platform.system()
+
+if current_os == "Windows":
+    libname = os.path.join("CytonFiles", "C", "c_game2048.dll")
+    c2048 = ctypes.CDLL(libname)
+elif current_os == "Linux":
+    libname = os.path.join("CytonFiles", "C", "libc_game2048.so")
+    c2048 = ctypes.CDLL(libname)
+else:
+    raise OSError(f"Unsupported operating system: {current_os}")
 c2048 = ctypes.CDLL(libname)
 
 c2048.init_c_game_2048.argtypes = []
