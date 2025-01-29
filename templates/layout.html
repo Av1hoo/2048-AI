@@ -1,0 +1,24 @@
+<!-- templates/layout.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>2048 Web App</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+  <nav>
+    <ul>
+      <li><a href="{{ url_for('game') }}">Game</a></li>
+      <li><a href="{{ url_for('batch') }}">Batch Runs</a></li>
+      <li><a href="{{ url_for('results') }}">Results</a></li>
+    </ul>
+  </nav>
+  
+  <div class="content">
+    {% block content %}{% endblock %}
+  </div>
+  
+  <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

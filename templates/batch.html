@@ -1,0 +1,36 @@
+<!-- templates/batch.html -->
+{% extends "layout.html" %}
+
+{% block content %}
+  <h1>Batch Runs</h1>
+
+  <div class="batch-settings">
+    <!-- Single Batch Run Form -->
+    <form action="{{ url_for('run_batch') }}" method="POST">
+      <h2>Run Single Batch</h2>
+      <label for="strategy">Strategy:</label>
+      <select name="strategy" id="strategy" required>
+        {% for s in strategies %}
+          <option value="{{ s }}">{{ s }}</option>
+        {% endfor %}
+      </select>
+      <label for="depth">Depth:</label>
+      <input type="number" name="depth" id="depth" value="2" min="1" max="10" required />
+      <label for="num_games">Number of Games:</label>
+      <input type="number" name="num_games" id="num_games" value="1000" min="1" required />
+      <button type="submit">Run Batch</button>
+    </form>
+
+    <!-- Multiple Batch Runs Form -->
+    <form action="{{ url_for('run_multiple_batch') }}" method="POST">
+      <h2>Run Multiple Batches</h2>
+      <label for="strategies">Strategies (comma-separated):</label>
+      <input type="text" name="strategies" id="strategies" value="Expectimax,Minimax,Random,DQN" required />
+      <label for="depths">Depths (comma-separated, match strategies):</label>
+      <input type="text" name="depths" id="depths" value="2,4,0,0" required />
+      <label for="num_games">Number of Games per Strategy:</label>
+      <input type="number" name="num_games" id="num_games" value="1000" min="1" required />
+      <button type="submit">Run Multiple Batches</button>
+    </form>
+  </div>
+{% endblock %}

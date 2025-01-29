@@ -1,0 +1,63 @@
+<!-- templates/results.html -->
+{% extends "layout.html" %}
+
+{% block content %}
+  <h1>Batch Run Results</h1>
+
+  {% if single_batch %}
+    <div class="results">
+      <h2>Single Batch Run</h2>
+      <p><strong>Strategy:</strong> {{ single_batch.strategy }}</p>
+      <p><strong>Depth:</strong> {{ single_batch.depth }}</p>
+      <p><strong>Number of Games:</strong> {{ single_batch.num_games }}</p>
+      <p><strong>Time Taken:</strong> {{ single_batch.time_taken }} seconds</p>
+      <div class="plots">
+        {% if single_batch.avg_score_plot %}
+          <img src="{{ url_for('static', filename=single_batch.avg_score_plot) }}" alt="Average Scores">
+        {% else %}
+          <p>No average score plot available.</p>
+        {% endif %}
+        {% if single_batch.best_score_plot %}
+          <img src="{{ url_for('static', filename=single_batch.best_score_plot) }}" alt="Best Scores">
+        {% else %}
+          <p>No best score plot available.</p>
+        {% endif %}
+        {% if single_batch.tile_distribution_plot %}
+          <img src="{{ url_for('static', filename=single_batch.tile_distribution_plot) }}" alt="Tile Distribution">
+        {% else %}
+          <p>No tile distribution plot available.</p>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+
+  {% if multiple_batches %}
+    <div class="results">
+      <h2>Multiple Batch Runs</h2>
+      <p><strong>Total Strategies:</strong> {{ multiple_batches|length }}</p>
+      <p><strong>Number of Games per Strategy:</strong> {{ multiple_batches[0].num_games }}</p>
+      <p><strong>Total Time Taken:</strong> {{ multiple_batches[0].time_taken }} seconds</p>
+      <div class="plots">
+        {% if multiple_batches[0].avg_score_plot %}
+          <img src="{{ url_for('static', filename=multiple_batches[0].avg_score_plot) }}" alt="Average Scores">
+        {% else %}
+          <p>No average score plot available.</p>
+        {% endif %}
+        {% if multiple_batches[0].best_score_plot %}
+          <img src="{{ url_for('static', filename=multiple_batches[0].best_score_plot) }}" alt="Best Scores">
+        {% else %}
+          <p>No best score plot available.</p>
+        {% endif %}
+        {% if multiple_batches[0].tile_distribution_plot %}
+          <img src="{{ url_for('static', filename=multiple_batches[0].tile_distribution_plot) }}" alt="Tile Distribution">
+        {% else %}
+          <p>No tile distribution plot available.</p>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+
+  {% if not single_batch and not multiple_batches %}
+    <p>No batch runs have been performed yet.</p>
+  {% endif %}
+{% endblock %}

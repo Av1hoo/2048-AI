@@ -4,10 +4,43 @@ body {
     font-family: Arial, sans-serif;
     text-align: center;
     background: #FAF8EF;
+    margin: 0;
+    padding: 0;
+  }
+  
+  nav {
+    background-color: #8f7a66;
+    padding: 10px 0;
+  }
+  
+  nav ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  nav ul li {
+    display: inline;
+    margin: 0 15px;
+  }
+  
+  nav ul li a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  
+  nav ul li a:hover {
+    text-decoration: underline;
+  }
+  
+  .content {
+    padding: 20px;
   }
   
   h1 {
     margin-top: 20px;
+    color: #776E65;
   }
   
   .info {
@@ -27,25 +60,125 @@ body {
     width: 60px;
     height: 60px;
     margin: 5px;
-    background: #CDC1B4;
+    /* background is set inline via style attribute */
     font-size: 24px;
     line-height: 60px;
     text-align: center;
     border-radius: 3px;
-    color: #776E65;
+    color: #776E65; /* Best for lighter backgrounds */
+    transition: background-color 0.2s ease;
   }
   
-  .buttons a {
-    margin: 5px;
-    padding: 8px 12px;
+  .settings {
+    margin-top: 20px;
+  }
+  
+  .settings form {
+    display: inline-block;
+    margin: 10px;
+  }
+  
+  .settings label {
+    margin-right: 5px;
+  }
+  
+  .settings input, .settings select {
+    margin-right: 15px;
+    padding: 5px;
+    border-radius: 3px;
+    border: 1px solid #ccc;
+  }
+  
+  .settings button {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 3px;
     background: #8f7a66;
     color: #fff;
-    text-decoration: none;
-    border-radius: 3px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  
+  .settings button:hover {
+    background: #a58b76;
+  }
+  
+  .buttons {
+    margin: 20px 0;
+  }
+  
+  .buttons button {
+    margin: 0 5px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    background: #8f7a66;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  
+  .buttons button:hover {
+    background: #a58b76;
+  }
+  
+  .buttons button:disabled {
+    background: #ccc;
+    cursor: not-allowed;
   }
   
   .game-over {
     color: red;
     font-weight: bold;
+    margin-top: 10px;
+  }
+  
+  .batch-settings form {
+    display: inline-block;
+    margin: 20px;
+    padding: 15px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background: #f9f9f9;
+  }
+  
+  .batch-settings label {
+    display: block;
+    margin-top: 10px;
+  }
+  
+  .batch-settings input, .batch-settings select {
+    width: 100%;
+    padding: 5px;
+    margin-top: 5px;
+    border-radius: 3px;
+    border: 1px solid #ccc;
+  }
+  
+  .batch-settings button {
+    margin-top: 15px;
+    padding: 8px 15px;
+    border: none;
+    border-radius: 3px;
+    background: #8f7a66;
+    color: #fff;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+  
+  .batch-settings button:hover {
+    background: #a58b76;
+  }
+  
+  .results .plots img {
+    width: 80%;
+    max-width: 600px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  .results .batch {
+    margin-bottom: 30px;
   }
   

@@ -10,13 +10,13 @@ from CytonFiles.Game_Logic import Game2048
 CONTINUOUS_STEP_DELAY = 1
 
 class Game2048GUI:
-    def __init__(self, master):
+    def __init__(self, master, ai_strategy="Expectimax", DEPTH=3):
         self.master = master
         self.master.title("2048 Advanced - C Accelerated")
         self.master.resizable(False, False)
 
         # Create the game logic object
-        self.game = Game2048(ai_strategy="Expectimax", best_game_path="Best_Games/best_game.pkl")
+        self.game = Game2048(ai_strategy="Expectimax", best_game_path="Best_Games/best_game.pkl", depth=DEPTH)
         self.game.reset_game()
 
         # Track best score in this session

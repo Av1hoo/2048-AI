@@ -6,6 +6,7 @@ from CytonFiles.C_funcs import bitboard_move, bitboard_count_empty, bitboard_is_
 class ExpectimaxAI:
     def __init__(self, depth=5, TIME_LIMIT=30):
         self.depth = depth
+        print("Creating Expectimax AI with depth", depth)
         self.cache = {}
         # For timing:
         self.start_time = 0

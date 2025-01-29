@@ -12,7 +12,7 @@ from CytonFiles.C_funcs import (
 from CytonFiles.AI_Factory import AI_Factory
 
 class Game2048:
-    def __init__(self, ai_strategy="Expectimax", best_game_path="Best_Games/best_game.pkl"):
+    def __init__(self, ai_strategy="Expectimax", best_game_path="Best_Games/best_game.pkl", depth=3):
         # Initialize the C environment just once
         init_c_game()
 
@@ -21,7 +21,7 @@ class Game2048:
         self.best_game_path = best_game_path
         
         # AI engine
-        self.factory = AI_Factory(EXPECTIMAX_DEPTH = 5, MINIMAX_DEPTH = 4)
+        self.factory = AI_Factory(EXPECTIMAX_DEPTH = depth, MINIMAX_DEPTH = depth)
         self.ai = self.factory.create_ai(self.ai_strategy)
 
         # Game state
@@ -123,6 +123,17 @@ class Game2048:
             self._finish_game()
 
         return True
+    
+    def play_full_ai(self, max_steps=1000):
+        """
+        Let the AI continue making moves until the game ends or we hit max_steps.
+        """
+        steps = 0
+        while not self.game_over and steps < max_steps:
+            moved = self.ai_single_step()
+            if not moved:
+                break
+            steps += 1
 
     def _update_highest(self):
         """
@@ -209,19 +220,33 @@ class Game2048:
             data = pickle.load(f)
         return data
     
- # ---- Helpers to store/restore from a dict (for session) ----
+# -- Helpers for storing in session --
     def get_state(self):
-        """Return a dict of the minimal game state needed to restore."""
         return {
             'bitboard': self.bitboard,
             'score': self.score,
             'highest': self.highest,
             'game_over': self.game_over,
+            'ai_strategy': self.ai_strategy,
+            # Store current depth (based on whichever strategy is active)
+            'depth': (
+                self.factory.EXPECTIMAX_DEPTH if self.ai_strategy == "Expectimax"
+                else self.factory.MINIMAX_DEPTH if self.ai_strategy == "Minimax"
+                else 0
+            )
         }
 
     def set_state(self, state):
-        """Load from a dict previously returned by get_state()."""
         self.bitboard = state['bitboard']
         self.score = state['score']
         self.highest = state['highest']
         self.game_over = state['game_over']
+        self.ai_strategy = state.get('ai_strategy', "Expectimax")
+
+        # Reinitialize AI strategy
+        self.ai = self.factory.create_ai(self.ai_strategy)
+
+        # Restore depth
+        saved_depth = state.get('depth', 4)  # Fallback or choose your own default
+        if self.ai_strategy in ["Expectimax", "Minimax"]:
+            self.set_depth(saved_depth)

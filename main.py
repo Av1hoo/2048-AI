@@ -7,7 +7,7 @@ from CytonFiles import Visualizer
 
 def main():
     root = tk.Tk()
-    app = Game2048GUI.Game2048GUI(root)
+    app = Game2048GUI.Game2048GUI(root, ai_strategy=AI_STRATEGY, DEPTH=DEPTH_EXPECIMAX)
     root.mainloop()
 
 if __name__ == "__main__":
@@ -16,9 +16,9 @@ if __name__ == "__main__":
     AI_STRATEGY = STRATEGY[0]
     DQN_MODEL_PATH = "model.pth"
     RUN_BATCH = False
-    RUN_MULTIPLE_BATCH = True
-    NUM_BATCH_GAMES = 1000
-    DEPTH_EXPECIMAX = 2
+    RUN_MULTIPLE_BATCH = False
+    NUM_BATCH_GAMES = 100
+    DEPTH_EXPECIMAX = 7
     DEPTH_MINIMAX = 4
     STRATEGY_BATCH = {"Expectimax": 2, "Minimax": 2, "Random": 0, "DQN": 0}
 

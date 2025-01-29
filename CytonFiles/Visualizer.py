@@ -7,26 +7,19 @@ class Visualizer:
     @staticmethod
     def visualize_stats(stats_all, num_games, show_plots=False):
         """
-        Generates Matplotlib figures based on batch game results.
-
-        Args:
-            stats_all (dict): The results from batch games.
-            num_games (int): Number of games run in the batch.
-            show_plots (bool): If True, display the plots interactively.
-        Returns:
-            list: A list of Matplotlib figures.
+        Generates Matplotlib figures based on batch game results and saves them.
+        Returns a dictionary with paths to the saved images.
         """
-        figures = []
+        plot_paths = {}
         strategies = list(stats_all.keys())
+        timestamp = time.strftime("%Y%m%d-%H%M%S")
+        stats_dir = "static/Stats"
+        if not os.path.exists(stats_dir):
+            os.makedirs(stats_dir)
 
-        # If you run multiple strategies, stats_all is a dict of {strategy: stats_dict}
         if isinstance(stats_all, dict) and all(isinstance(s, dict) for s in stats_all.values()):
             average_scores = [stats_all[s]['average_score'] for s in strategies]
             best_scores = [stats_all[s]['best_score'] for s in strategies]
-
-            # Ensure 'Stats' directory exists
-            if not os.path.exists("Stats"):
-                os.makedirs("Stats")
 
             # Average Scores Bar Chart
             fig_avg = plt.figure(figsize=(10, 6))
@@ -35,8 +28,10 @@ class Visualizer:
             plt.ylabel('Average Score')
             plt.title(f'Average Scores over {num_games} Games')
             plt.tight_layout()
-            figures.append(fig_avg)
-            plt.savefig(f'Stats/average_scores_{time.strftime("%Y%m%d-%H%M")}.png')
+            avg_score_filename = f"average_scores_{timestamp}.png"
+            avg_score_path = os.path.join(stats_dir, avg_score_filename)
+            plt.savefig(avg_score_path)
+            plot_paths['avg_score_plot'] = f"Stats/{avg_score_filename}"
             if show_plots:
                 plt.show()
             plt.close(fig_avg)  # Close the figure to free memory
@@ -48,8 +43,10 @@ class Visualizer:
             plt.ylabel('Best Score')
             plt.title(f'Best Scores over {num_games} Games')
             plt.tight_layout()
-            figures.append(fig_best)
-            plt.savefig(f'Stats/best_scores_{time.strftime("%Y%m%d-%H%M")}.png')
+            best_score_filename = f"best_scores_{timestamp}.png"
+            best_score_path = os.path.join(stats_dir, best_score_filename)
+            plt.savefig(best_score_path)
+            plot_paths['best_score_plot'] = f"Stats/{best_score_filename}"
             if show_plots:
                 plt.show()
             plt.close(fig_best)
@@ -72,8 +69,10 @@ class Visualizer:
             plt.legend()
             plt.grid(True)
             plt.tight_layout()
-            figures.append(fig_hist)
-            plt.savefig(f"Stats/highest_tile_distribution_{time.strftime('%Y%m%d-%H%M')}.png")
+            tile_distribution_filename = f"highest_tile_distribution_{timestamp}.png"
+            tile_distribution_path = os.path.join(stats_dir, tile_distribution_filename)
+            plt.savefig(tile_distribution_path)
+            plot_paths['tile_distribution_plot'] = f"Stats/{tile_distribution_filename}"
             if show_plots:
                 plt.show()
             plt.close(fig_hist)
@@ -85,14 +84,15 @@ class Visualizer:
             best_score = stats_all.get("best_score", 0)
             histogram = stats_all.get("histogram_highest_tile", {})
 
-            # Ensure 'Stats' directory exists
-            if not os.path.exists("Stats"):
-                os.makedirs("Stats")
-
             fig_single = plt.figure(figsize=(12, 8))
             all_tiles = [2**i for i in range(4, 14)]
             counts = [histogram.get(tile, 0) for tile in all_tiles]
-            plt.bar(range(len(all_tiles)), counts, alpha=0.7, label=strategy)
+            # Create bars and add count numbers on top
+            bars = plt.bar(range(len(all_tiles)), counts, alpha=0.7, label=strategy)
+            for i, bar in enumerate(bars):
+                height = bar.get_height()
+                plt.text(bar.get_x() + bar.get_width()/2., height,
+                        f'{int(height)}', ha='center', va='bottom')
             plt.xlabel('Highest Tile')
             plt.ylabel('Frequency')
             plt.title(f'Highest Tile Distribution over {num_games} Games')
@@ -100,8 +100,10 @@ class Visualizer:
             plt.legend()
             plt.grid(True)
             plt.tight_layout()
-            figures.append(fig_single)
-            plt.savefig(f"Stats/highest_tile_distribution_{time.strftime('%Y%m%d-%H%M')}.png")
+            tile_distribution_filename = f"highest_tile_distribution_{timestamp}.png"
+            tile_distribution_path = os.path.join(stats_dir, tile_distribution_filename)
+            plt.savefig(tile_distribution_path)
+            plot_paths['tile_distribution_plot'] = f"Stats/{tile_distribution_filename}"
             if show_plots:
                 plt.show()
             plt.close(fig_single)
@@ -109,4 +111,4 @@ class Visualizer:
             # Optionally, print the stats
             print(f"Strategy: {strategy} | Average: {avg_score} | Best: {best_score} | Highest Tile Distribution: {histogram}")
 
-        return figures
+        return plot_paths
