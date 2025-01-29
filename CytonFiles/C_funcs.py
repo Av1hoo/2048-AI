@@ -1,4 +1,5 @@
 import ctypes
+import time
 ###############################################################################
 # 1) Load the C Library via ctypes
 ###############################################################################
@@ -37,7 +38,7 @@ c2048.advanced_heuristic_c.argtypes = [ctypes.c_uint64]
 c2048.advanced_heuristic_c.restype = ctypes.c_double
 
 def init_c_game():
-    c2048.init_c_game_2048()
+    c2048.init_c_game_2048(random_seed=time.time_ns())
 
 def bitboard_move(bitboard, action):
     out_score = ctypes.c_int(0)

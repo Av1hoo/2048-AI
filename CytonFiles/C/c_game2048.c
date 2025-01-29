@@ -5,7 +5,9 @@
 #include <math.h>
 
 // Export functions
-__declspec(dllexport) void init_c_game_2048();
+// x64 Native Tools Command Prompt for VS 2022
+// cl /LD /O2 c_game2048.c /Fe:c_game2048.dll
+__declspec(dllexport) void init_c_game_2048(int seed);
 __declspec(dllexport) uint64_t bitboard_move(uint64_t bitboard, int action, int* out_score, bool* out_moved);
 __declspec(dllexport) int bitboard_count_empty(uint64_t bitboard);
 __declspec(dllexport) uint64_t bitboard_spawn(uint64_t bitboard);
@@ -450,8 +452,7 @@ double advanced_heuristic_c(uint64_t bitboard) {
 // -----------------------------------------------------------------------------
 // 7) Provide a convenient init function to call from Python once
 // -----------------------------------------------------------------------------
-void init_c_game_2048() {
+void init_c_game_2048(int seed) {
     init_tables();
-    // seed the RNG once if desired:
-    srand((unsigned)time(NULL));
+    srand(seed);
 }

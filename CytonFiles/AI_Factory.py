@@ -1,3 +1,4 @@
+# AI_Factory.py
 from CytonFiles.ExpectimaxAI import ExpectimaxAI
 from CytonFiles.MinimaxAI import MinimaxAI
 from CytonFiles.RandomAI import RandomAI
@@ -9,7 +10,6 @@ class AI_Factory:
         self.MINIMAX_DEPTH = MINIMAX_DEPTH
         self.ai_list = ["Expectimax", "Minimax", "Random", "DQN"]
     
-    @staticmethod
     def create_ai(self, strategy, DQN_MODEL_PATH="model.pth"):
         if strategy.lower() == "expectimax":
             return ExpectimaxAI(depth=self.EXPECTIMAX_DEPTH)

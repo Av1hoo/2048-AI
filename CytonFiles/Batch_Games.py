@@ -1,3 +1,4 @@
+# Batch_Games.py
 import os
 import pickle
 from collections import defaultdict
@@ -5,13 +6,12 @@ from CytonFiles.AI_Factory import AI_Factory
 from CytonFiles.C_funcs import init_c_game, bitboard_spawn_func, bitboard_get_max_tile_func, bitboard_move_func, bitboard_is_game_over_func
 
 
-
 class Batch_Games():
     @staticmethod
     def run_batch_games(num_games=1000, strategy="expectimax", MODEL_PATH="model.pth", DEPTH=5):
         init_c_game()
         factory = AI_Factory(EXPECTIMAX_DEPTH=DEPTH, MINIMAX_DEPTH=DEPTH)
-        ai = factory.create_ai(factory, strategy, MODEL_PATH)
+        ai = factory.create_ai(strategy, MODEL_PATH)
         
         best_score = -1
         best_game = None
@@ -49,7 +49,6 @@ class Batch_Games():
 
                 if bitboard_is_game_over_func(bitboard):
                     break
-
             total_score += score
             histogram_highest_tile[highest] += 1
 

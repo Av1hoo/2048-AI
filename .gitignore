@@ -30,3 +30,9 @@
 *.exe
 *.out
 *.app
+
+
+# exclude stats folder
+stats/
+*.pyc
+CytonFiles/__pycache__/
