@@ -1,11 +1,9 @@
+# C_funcs.py
 import ctypes
 import time
 import os
 import platform
 
-###############################################################################
-# 1) Load the C Library via ctypes
-###############################################################################
 current_os = platform.system()
 
 if current_os == "Windows":
