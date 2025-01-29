@@ -1,0 +1,54 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>2048 Web</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <h1>2048 Game</h1>
+
+  <div class="info">
+    <p>Score: {{ score }}</p>
+    <p>Highest Tile: {{ highest }}</p>
+    {% if game_over %}
+      <p class="game-over">Game Over!</p>
+    {% endif %}
+  </div>
+
+  <div class="board">
+    {% for row in board %}
+      <div class="row">
+      {% for cell in row %}
+        <div class="cell cell-{{ cell }}">{{ cell if cell > 0 else '' }}</div>
+      {% endfor %}
+      </div>
+    {% endfor %}
+  </div>
+
+  <div class="buttons">
+    <a href="{{ url_for('move', direction='up') }}">Up</a>
+    <a href="{{ url_for('move', direction='down') }}">Down</a>
+    <a href="{{ url_for('move', direction='left') }}">Left</a>
+    <a href="{{ url_for('move', direction='right') }}">Right</a>
+    <a href="{{ url_for('ai_move') }}">AI Move</a>
+    <a href="{{ url_for('reset_game') }}">Reset</a>
+  </div>
+
+  <!-- Optional: JavaScript for capturing arrow keys to call the move route -->
+  <script>
+    document.addEventListener('keydown', function(e) {
+      if(e.key === "ArrowUp") {
+        window.location.href = "/move/up";
+      } else if(e.key === "ArrowDown") {
+        window.location.href = "/move/down";
+      } else if(e.key === "ArrowLeft") {
+        window.location.href = "/move/left";
+      } else if(e.key === "ArrowRight") {
+        window.location.href = "/move/right";
+      }
+    });
+  </script>
+</body>
+</html>

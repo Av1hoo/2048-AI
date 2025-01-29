@@ -208,3 +208,20 @@ class Game2048:
         with open(self.best_game_path, "rb") as f:
             data = pickle.load(f)
         return data
+    
+ # ---- Helpers to store/restore from a dict (for session) ----
+    def get_state(self):
+        """Return a dict of the minimal game state needed to restore."""
+        return {
+            'bitboard': self.bitboard,
+            'score': self.score,
+            'highest': self.highest,
+            'game_over': self.game_over,
+        }
+
+    def set_state(self, state):
+        """Load from a dict previously returned by get_state()."""
+        self.bitboard = state['bitboard']
+        self.score = state['score']
+        self.highest = state['highest']
+        self.game_over = state['game_over']
