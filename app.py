@@ -7,7 +7,7 @@ from CytonFiles.Visualizer import Visualizer
 from CytonFiles.Batch_Games import Batch_Games
 
 app = Flask(__name__)
-app.secret_key = "CHANGE_THIS_TO_SOME_RANDOM_SECRET_KEY"  # Replace with a secure key in production
+app.secret_key = "Game2048"  # Replace with a secure key in production
 
 AVAILABLE_STRATEGIES = ["Expectimax", "Minimax", "Random", "DQN"]
 
