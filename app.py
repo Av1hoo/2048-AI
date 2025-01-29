@@ -1,14 +1,10 @@
 import streamlit as st
-import pandas as pd
-import time
-import os
-import matplotlib.pyplot as plt  # Import Matplotlib
-from streamlit_autorefresh import st_autorefresh  # Import autorefresh
+import matplotlib.pyplot as plt  
+from streamlit_shortcuts import add_keyboard_shortcuts
 
-# Import your logic classes
 from CytonFiles.Game_Logic import Game2048
 from CytonFiles.Batch_Games import Batch_Games
-from CytonFiles.Visualizer import Visualizer  # Ensure Visualizer is correctly imported
+from CytonFiles.Visualizer import Visualizer
 
 # -------------- CONFIG --------------
 AVAILABLE_STRATEGIES = ["Expectimax", "Minimax", "Random", "DQN"]
@@ -126,6 +122,22 @@ def ai_step():
     if game.is_game_over():
         st.session_state["ai_playing"] = False  # Stop AI if no move or game over
 
+def move_up():
+    st.session_state["game"].do_move(0)
+    st.session_state["ai_playing"] = False  # Stop AI if user makes a move
+
+def move_down():
+    st.session_state["game"].do_move(1)
+    st.session_state["ai_playing"] = False
+
+def move_left():
+    st.session_state["game"].do_move(2)
+    st.session_state["ai_playing"] = False
+
+def move_right():
+    st.session_state["game"].do_move(3)
+    st.session_state["ai_playing"] = False
+
 # -------------- STREAMLIT APP --------------
 def main():
     st.set_page_config(layout="wide", page_title="2048 Streamlit Demo")
@@ -133,6 +145,16 @@ def main():
     # Initialize game state
     init_game_state()
 
+    add_keyboard_shortcuts({
+        "ArrowUp": move_up,
+        "ArrowDown": move_down,
+        "ArrowLeft": move_left,
+        "ArrowRight": move_right,
+        "w": move_up,
+        "s": move_down,
+        "a": move_left,
+        "d": move_right,
+    })
     # Create 3 tabs (Streamlit >= 1.10.0 has st.tabs)
     tabs = st.tabs(["Play 2048", "Run Batch", "Batch Results"])
 
@@ -172,7 +194,7 @@ def main():
         # Buttons for user to control
         col1, col2, col3, col4 = st.columns([1,1,1,1])
         with col1:
-            if st.button("↑ Up"):
+            if st.button("↑ Up", "ArrowUp"):
                 game.do_move(0)
         with col2:
             if st.button("↓ Down"):
