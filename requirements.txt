@@ -1,3 +1,4 @@
+gunicorn==20.1.0
 absl-py==2.1.0
 altair==5.5.0
 altgraph==0.17.4
@@ -126,13 +127,12 @@ tenacity==9.0.0
 tensorboard==2.18.0
 tensorboard-data-server==0.7.2
 tensorflow==2.18.0
-tensorflow_intel==2.18.0
 termcolor==2.5.0
 threadpoolctl==3.5.0
 toml==0.10.2
-torch==2.5.1+cu124
-torchaudio==2.5.1+cu124
-torchvision==0.20.1+cu124
+torch==2.5.1
+torchaudio==2.5.1
+torchvision==0.20.1
 tornado==6.4.2
 tqdm==4.67.1
 traitlets==5.14.3
