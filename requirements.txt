@@ -129,9 +129,9 @@ tensorflow==2.18.0
 termcolor==2.5.0
 threadpoolctl==3.5.0
 toml==0.10.2
-torch==2.5.1+cu124
-torchaudio==2.5.1+cu124
-torchvision==0.20.1+cu124
+torch==2.5.1
+torchaudio==2.5.1
+torchvision==0.20.1
 tornado==6.4.2
 tqdm==4.67.1
 traitlets==5.14.3
