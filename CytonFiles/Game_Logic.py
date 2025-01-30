@@ -124,7 +124,7 @@ class Game2048:
 
         return True
     
-    def play_full_ai(self, max_steps=1000):
+    def play_full_ai(self, max_steps=10000):
         """
         Let the AI continue making moves until the game ends or we hit max_steps.
         """
